@@ -154,6 +154,7 @@ class Chapter1 {
         ch1.ex2();
         ch1.ex3();
         ch1.ex4();
+        ch1.ex6();
         ch1.ex9();
         ch1.ex10();
 //        ch1.ex14();
