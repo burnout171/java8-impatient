@@ -151,6 +151,7 @@ class Chapter1 {
 
     public static void main(String[] args) {
         Chapter1 ch1 = new Chapter1();
+//        ch1.ex1();
         ch1.ex2();
         ch1.ex3();
         ch1.ex4();
