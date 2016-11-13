@@ -3,8 +3,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.BinaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -59,14 +63,58 @@ class Chapter2 {
     }
 
     void ex5() {
+        initGenerator()
+                .limit(20)
+                .forEach(System.out::println);
+    }
+
+    void ex6() {
+        characterStream(WAR_AND_PEACE).forEach(System.out::println);
+    }
+
+    void ex7() {
+        System.out.println(isFiniteSimple(characterStream(WAR_AND_PEACE)));
+        System.out.println(isFiniteStable(initGenerator()));
+    }
+
+    void ex8() {
+        Stream<Long> first = Stream.iterate(1L, v -> v + 1).limit(10);
+        Stream<Long> second = Stream.iterate(1L, v -> v + 1).limit(11);
+        zip(first, second).forEach(System.out::println);
+    }
+
+    void ex9() {
+        BinaryOperator<List<Integer>> accumulator = (list1, list2) -> {
+            list1.addAll(list2);
+            return list1;
+        };
+
+        List<Integer> first = Stream.of(Arrays.asList(1, 2, 3, 4, 5)).reduce(new ArrayList<>(), accumulator);
+        collectionPrinter("First reduce: ", first);
+
+        List<Integer> second = Stream.of(Arrays.asList(1, 2, 3, 4, 5)).reduce((list1, list2) -> {
+            list1.addAll(list2);
+            return list1;
+        }).orElse(new ArrayList<>());
+        collectionPrinter("Second reduce: ", second);
+
+        List<Integer> third = Stream.of(Arrays.asList(1, 2, 3, 4, 5)).reduce(new ArrayList<>(),
+                accumulator,
+                accumulator);
+        collectionPrinter("Third reduce: ", third);
+    }
+
+    private void collectionPrinter(final String message, final Collection<Integer> collection) {
+        System.out.print(message);
+        collection.forEach(v -> System.out.printf("%d ", v));
+    }
+
+    private Stream<Long> initGenerator() {
         long seed = System.currentTimeMillis();
         long a = 25214903917L;
         long c = 11L;
         long m = (long) Math.pow(2, 48);
-
-        generator(a, c, m, seed)
-                .limit(20)
-                .forEach(System.out::println);
+        return generator(a, c, m, seed);
     }
 
     /**
@@ -97,6 +145,46 @@ class Chapter2 {
         return Arrays.asList(contents.split("[\\P{L}]+"));
     }
 
+    private Stream<Character> characterStream(final String s) {
+        return s.chars().mapToObj(c -> (char) c);
+    }
+
+    /**
+     * The easiest implementation of ifFinite method. Will return true if Stream is finite.
+     * Otherwise loop is never be finished.
+     * @param stream Incoming stream.
+     * @param <T> Type under the Stream.
+     * @return True if stream is finite.
+     */
+    public static <T> boolean isFiniteSimple(final Stream<T> stream) {
+        Iterator<T> it = stream.iterator();
+        while (it.hasNext()) {
+            it.next();
+        }
+        return true;
+    }
+
+    /**
+     * Will return true if Stream is finite and false otherwise.
+     * @param stream Incoming stream.
+     * @param <T> Type under the Stream.
+     * @return True if stream is finite, false otherwise.
+     */
+    public static <T> boolean isFiniteStable(final Stream<T> stream) {
+        return stream.spliterator().getExactSizeIfKnown() >= 0;
+    }
+
+    public static <T> Stream<T> zip(final Stream<T> first, final Stream<T> second) {
+        Iterator<T> firstIt = first.iterator();
+        Iterator<T> secondIt = second.iterator();
+        List<T> result = new ArrayList<>();
+        while (firstIt.hasNext() && secondIt.hasNext()) {
+            result.add(secondIt.next());
+            result.add(firstIt.next());
+        }
+        return result.stream();
+    }
+
     public static void main(String[] args) {
         Chapter2 ch = new Chapter2();
 //        try {
@@ -107,6 +195,10 @@ class Chapter2 {
 //            e.printStackTrace();
 //        }
 //        ch.ex4();
-        ch.ex5();
+//        ch.ex5();
+//        ch.ex6();
+//        ch.ex7();
+//        ch.ex8();
+        ch.ex9();
     }
 }

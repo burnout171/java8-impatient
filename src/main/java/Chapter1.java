@@ -36,14 +36,6 @@ class Chapter1 {
         }
     }
 
-    private static Runnable andThen(final Runnable first, final Runnable second) {
-        return () -> {
-            new Thread(first).run();
-            new Thread(second).run();
-            System.out.println("Third thread");
-        };
-    }
-
     void ex1() {
         String[] list = {"first", "second", "third"};
         Arrays.sort(list, (first, second) -> Integer.compare(first.length(), second.length()));
@@ -147,6 +139,14 @@ class Chapter1 {
 
             class Test extend Superclass implements I {} // f() method from Superclass will be used.
          */
+    }
+
+    private static Runnable andThen(final Runnable first, final Runnable second) {
+        return () -> {
+            new Thread(first).run();
+            new Thread(second).run();
+            System.out.println("Third thread");
+        };
     }
 
     public static void main(String[] args) {
