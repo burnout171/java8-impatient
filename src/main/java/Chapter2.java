@@ -18,6 +18,33 @@ class Chapter2 {
     private static final String ALICE = "alice.txt";
     private static final String WAR_AND_PEACE = "war_and_peace.txt";
 
+    private class DoubleAverager {
+        private final double total;
+        private final int count;
+
+        DoubleAverager() {
+            this.total = 0;
+            this.count = 0;
+        }
+
+        DoubleAverager(double total, int count) {
+            this.total = total;
+            this.count = count;
+        }
+
+        double average() {
+            return total > 0 ? total / count : 0;
+        }
+
+        DoubleAverager accept(final double num) {
+            return new DoubleAverager(total + num, count + 1);
+        }
+
+        DoubleAverager combine(final DoubleAverager averager) {
+            return new DoubleAverager(total + averager.total, count + averager.count);
+        }
+    }
+
     void ex1() throws IOException {
         List<String> words = getWordsFromFile(ALICE);
         long counter = parallelCounter(words);
@@ -84,24 +111,32 @@ class Chapter2 {
     }
 
     void ex9() {
+        List<Integer> array = Arrays.asList(1, 2, 3, 4, 5);
         BinaryOperator<List<Integer>> accumulator = (list1, list2) -> {
             list1.addAll(list2);
             return list1;
         };
 
-        List<Integer> first = Stream.of(Arrays.asList(1, 2, 3, 4, 5)).reduce(new ArrayList<>(), accumulator);
+        List<Integer> first = Stream.of(array).reduce(new ArrayList<>(), accumulator);
         collectionPrinter("First reduce: ", first);
 
-        List<Integer> second = Stream.of(Arrays.asList(1, 2, 3, 4, 5)).reduce((list1, list2) -> {
+        List<Integer> second = Stream.of(array).reduce((list1, list2) -> {
             list1.addAll(list2);
             return list1;
         }).orElse(new ArrayList<>());
         collectionPrinter("Second reduce: ", second);
 
-        List<Integer> third = Stream.of(Arrays.asList(1, 2, 3, 4, 5)).reduce(new ArrayList<>(),
+        List<Integer> third = Stream.of(array).reduce(new ArrayList<>(),
                 accumulator,
                 accumulator);
         collectionPrinter("Third reduce: ", third);
+    }
+
+    private void ex10() {
+        Stream<Double> stream = Stream.iterate(1.0, v -> v + 1.0).limit(4);
+        System.out.println(stream.reduce(new DoubleAverager(),
+                DoubleAverager::accept,
+                DoubleAverager::combine).average());
     }
 
     private void collectionPrinter(final String message, final Collection<Integer> collection) {
@@ -199,6 +234,7 @@ class Chapter2 {
 //        ch.ex6();
 //        ch.ex7();
 //        ch.ex8();
-        ch.ex9();
+//        ch.ex9();
+        ch.ex10();
     }
 }
