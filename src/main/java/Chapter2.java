@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -105,13 +106,13 @@ class Chapter2 {
     }
 
     void ex8() {
-        Stream<Long> first = Stream.iterate(1L, v -> v + 1).limit(10);
-        Stream<Long> second = Stream.iterate(1L, v -> v + 1).limit(11);
+        Stream<Integer> first = intStreamWithLimit(10);
+        Stream<Integer> second = intStreamWithLimit(11);
         zip(first, second).forEach(System.out::println);
     }
 
     void ex9() {
-        List<Integer> array = Arrays.asList(1, 2, 3, 4, 5);
+        List<Integer> array = intStreamWithLimit(5).collect(Collectors.toList());
         BinaryOperator<List<Integer>> accumulator = (list1, list2) -> {
             list1.addAll(list2);
             return list1;
@@ -133,15 +134,31 @@ class Chapter2 {
     }
 
     private void ex10() {
-        Stream<Double> stream = Stream.iterate(1.0, v -> v + 1.0).limit(4);
+        Stream<Double> stream = Stream.iterate(1.0, v -> v + 1.0).limit(5);
         System.out.println(stream.reduce(new DoubleAverager(),
                 DoubleAverager::accept,
                 DoubleAverager::combine).average());
     }
 
+    private void ex11() {
+        List<List<Integer>> aggregator = new ArrayList<>();
+        aggregator.add(intStreamWithLimit(3).collect(Collectors.toList()));
+        aggregator.add(intStreamWithLimit(4).collect(Collectors.toList()));
+        aggregator.add(intStreamWithLimit(5).collect(Collectors.toList()));
+
+        Integer[] flatArray = aggregator.stream().flatMap(Collection::stream).toArray(Integer[]::new);
+        List<Integer> result = Arrays.asList(new Integer[flatArray.length]);
+        IntStream.range(0, flatArray.length).parallel().forEach(c -> result.set(c, flatArray[c]));
+        collectionPrinter("Exercise 11: ", result);
+    }
+
     private void collectionPrinter(final String message, final Collection<Integer> collection) {
         System.out.print(message);
         collection.forEach(v -> System.out.printf("%d ", v));
+    }
+
+    private Stream<Integer> intStreamWithLimit(final int limit) {
+        return Stream.iterate(1, v -> v + 1).limit(limit);
     }
 
     private Stream<Long> initGenerator() {
@@ -235,6 +252,7 @@ class Chapter2 {
 //        ch.ex7();
 //        ch.ex8();
 //        ch.ex9();
-        ch.ex10();
+//        ch.ex10();
+        ch.ex11();
     }
 }
