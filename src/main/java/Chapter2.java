@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +45,31 @@ class Chapter2 {
         DoubleAverager combine(final DoubleAverager averager) {
             return new DoubleAverager(total + averager.total, count + averager.count);
         }
+    }
+
+    /**
+     * The easiest implementation of ifFinite method. Will return true if Stream is finite.
+     * Otherwise loop is never be finished.
+     * @param stream Incoming stream.
+     * @param <T> Type under the Stream.
+     * @return True if stream is finite.
+     */
+    public static <T> boolean isFiniteSimple(final Stream<T> stream) {
+        Iterator<T> it = stream.iterator();
+        while (it.hasNext()) {
+            it.next();
+        }
+        return true;
+    }
+
+    /**
+     * Will return true if Stream is finite and false otherwise.
+     * @param stream Incoming stream.
+     * @param <T> Type under the Stream.
+     * @return True if stream is finite, false otherwise.
+     */
+    public static <T> boolean isFiniteStable(final Stream<T> stream) {
+        return stream.spliterator().getExactSizeIfKnown() >= 0;
     }
 
     void ex1() throws IOException {
@@ -152,6 +178,33 @@ class Chapter2 {
         collectionPrinter("Exercise 11: ", result);
     }
 
+    private void ex12() throws IOException {
+        AtomicInteger[] shortWords = new AtomicInteger[SYMBOLS_FOR_WORD];
+        Stream<String> stream = getWordsFromFile(WAR_AND_PEACE).stream();
+        stream.parallel().forEach(w -> {
+            int length = w.length();
+            if (length < SYMBOLS_FOR_WORD) {
+                AtomicInteger counter = shortWords[length];
+                if (counter == null) {
+                    counter = new AtomicInteger();
+                    shortWords[length] = counter;
+                }
+                counter.getAndIncrement();
+            }
+        });
+        for (int i = 0; i < SYMBOLS_FOR_WORD; i++) {
+            AtomicInteger counter = shortWords[i];
+            System.out.printf("%d symbol words counter %d \n", i, counter.get());
+        }
+    }
+
+    private void ex13() throws IOException {
+        getWordsFromFile(WAR_AND_PEACE).parallelStream()
+                .filter(w -> w.length() < SYMBOLS_FOR_WORD)
+                .collect(Collectors.groupingBy(String::length, Collectors.counting()))
+                .forEach((s, c) -> System.out.printf("%d symbol words counter %d \n", s, c));
+    }
+
     private void collectionPrinter(final String message, final Collection<Integer> collection) {
         System.out.print(message);
         collection.forEach(v -> System.out.printf("%d ", v));
@@ -201,31 +254,6 @@ class Chapter2 {
         return s.chars().mapToObj(c -> (char) c);
     }
 
-    /**
-     * The easiest implementation of ifFinite method. Will return true if Stream is finite.
-     * Otherwise loop is never be finished.
-     * @param stream Incoming stream.
-     * @param <T> Type under the Stream.
-     * @return True if stream is finite.
-     */
-    public static <T> boolean isFiniteSimple(final Stream<T> stream) {
-        Iterator<T> it = stream.iterator();
-        while (it.hasNext()) {
-            it.next();
-        }
-        return true;
-    }
-
-    /**
-     * Will return true if Stream is finite and false otherwise.
-     * @param stream Incoming stream.
-     * @param <T> Type under the Stream.
-     * @return True if stream is finite, false otherwise.
-     */
-    public static <T> boolean isFiniteStable(final Stream<T> stream) {
-        return stream.spliterator().getExactSizeIfKnown() >= 0;
-    }
-
     public static <T> Stream<T> zip(final Stream<T> first, final Stream<T> second) {
         Iterator<T> firstIt = first.iterator();
         Iterator<T> secondIt = second.iterator();
@@ -239,20 +267,22 @@ class Chapter2 {
 
     public static void main(String[] args) {
         Chapter2 ch = new Chapter2();
-//        try {
-//            ch.ex1();
-//            ch.ex2();
-//            ch.ex3();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ch.ex4();
-//        ch.ex5();
-//        ch.ex6();
-//        ch.ex7();
-//        ch.ex8();
-//        ch.ex9();
-//        ch.ex10();
+        try {
+            ch.ex1();
+            ch.ex2();
+            ch.ex3();
+            ch.ex12();
+            ch.ex13();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ch.ex4();
+        ch.ex5();
+        ch.ex6();
+        ch.ex7();
+        ch.ex8();
+        ch.ex9();
+        ch.ex10();
         ch.ex11();
     }
 }
