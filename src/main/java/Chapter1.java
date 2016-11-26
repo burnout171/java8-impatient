@@ -12,6 +12,10 @@ class Chapter1 {
 
     private static final File FILE = new File(System.getProperty("user.home"));
 
+    Chapter1() {
+        Utils.printChapter(Chapter1.class.getSimpleName());
+    }
+
     private interface RunnableEx {
         void run() throws Exception;
 
@@ -37,38 +41,31 @@ class Chapter1 {
     }
 
     void ex1() {
+        Utils.printExercise(1);
         String[] list = {"first", "second", "third"};
         Arrays.sort(list, (first, second) -> Integer.compare(first.length(), second.length()));
     }
 
     void ex2() {
+        Utils.printExercise(2);
         FileFilter directoryFilter = new FileFilter() {
             @Override
-            public boolean accept(File pathname) {
-                if (pathname.isDirectory()) {
-                    System.out.print(pathname + "; ");
-                    return true;
-                }
-                return false;
+            public boolean accept(final File pathname) {
+                return Chapter1.accept(pathname);
             }
         };
 
         FILE.listFiles(directoryFilter);
         System.out.println();
 
-        FILE.listFiles((file) -> {
-            if (file.isDirectory()) {
-                System.out.print(file + "; ");
-                return true;
-            }
-            return false;
-        });
+        FILE.listFiles((file) -> accept(file));
         System.out.println();
 
         FILE.listFiles(directoryFilter::accept);
     }
 
     void ex3() {
+        Utils.printExercise(3);
         FILE.list((file, name) -> {
             if (name.endsWith(".xml")) {
                 System.out.println(file + File.separator + name);
@@ -79,6 +76,7 @@ class Chapter1 {
     }
 
     void ex4() {
+        Utils.printExercise(4);
         File[] files = FILE.listFiles();
         Arrays.sort(files, (first, second) -> {
             if (first.isDirectory() && second.isDirectory() || first.isFile() && second.isFile()) {
@@ -89,11 +87,13 @@ class Chapter1 {
             return 1;
         });
         for (File file : files) {
-            System.out.print(file + "; ");
+            System.out.print(file + " ");
         }
+        System.out.println();
     }
 
     void ex6() {
+        Utils.printExercise(6);
         new Thread(RunnableEx.uncheck(() -> {
             System.out.println("sleep");
             TimeUnit.SECONDS.sleep(1);
@@ -101,11 +101,13 @@ class Chapter1 {
     }
 
     void ex9() {
+        Utils.printExercise(9);
         new Thread(andThen(() -> System.out.println("First thread"), () -> System.out.println("Second thread")))
                 .start();
     }
 
     void ex10() {
+        Utils.printExercise(10);
         String[] names = {"Peter", "Paul", "Mary"};
         List<Runnable> runners = new ArrayList<>();
         /* The following loop will not be compiled. i variable is not final.
@@ -121,6 +123,7 @@ class Chapter1 {
     }
 
     void ex14() {
+        Utils.printExercise(14);
         /*
             interface J {
                 void f();         // abstract. Inheritor class needs to implement it.
@@ -139,6 +142,14 @@ class Chapter1 {
 
             class Test extend Superclass implements I {} // f() method from Superclass will be used.
          */
+    }
+
+    private static boolean accept(final File pathname) {
+        if (pathname.isDirectory()) {
+            System.out.print(pathname + " ");
+            return true;
+        }
+        return false;
     }
 
     private static Runnable andThen(final Runnable first, final Runnable second) {

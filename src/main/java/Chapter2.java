@@ -20,6 +20,10 @@ class Chapter2 {
     private static final String ALICE = "alice.txt";
     private static final String WAR_AND_PEACE = "war_and_peace.txt";
 
+    Chapter2() {
+        Utils.printChapter(Chapter2.class.getSimpleName());
+    }
+
     private class DoubleAverager {
         private final double total;
         private final int count;
@@ -73,25 +77,22 @@ class Chapter2 {
     }
 
     void ex1() throws IOException {
+        Utils.printExercise(1);
         List<String> words = getWordsFromFile(ALICE);
         long counter = parallelCounter(words);
         System.out.println(counter);
     }
 
     void ex2() throws IOException {
+        Utils.printExercise(2);
         List<String> words = getWordsFromFile(ALICE);
         words.parallelStream()
-                .filter(w -> {
-                    if (w.length() > SYMBOLS_FOR_WORD) {
-                        System.out.println("Filter call with: " + w);
-                        return true;
-                    }
-                    return false;
-                })
-                .limit(5).forEach(System.out::println);
+                .filter(w -> w.length() > SYMBOLS_FOR_WORD)
+                .forEach(w -> System.out.println("Filter call with: " + w));
     }
 
     void ex3() throws IOException {
+        Utils.printExercise(3);
         List<String> words = getWordsFromFile(WAR_AND_PEACE);
 
         long before = System.currentTimeMillis();
@@ -108,36 +109,49 @@ class Chapter2 {
     }
 
     void ex4() {
+        Utils.printExercise(4);
         int[] values = {1, 4, 9, 16};
-        Stream stream = Stream.of(values);
-        stream.forEach(System.out::println);
+        Stream.of(values).forEach(n -> {
+            for (int i : n) {
+                System.out.printf("%d ", i);
+            }
+        });
+        System.out.println();
 
-        IntStream intStream = IntStream.of(values);
-        intStream.forEach(System.out::println);
+        IntStream.of(values).forEach(n -> System.out.printf("%d ", n));
+        System.out.println();
     }
 
     void ex5() {
+        Utils.printExercise(5);
         initGenerator()
                 .limit(20)
-                .forEach(System.out::println);
+                .forEach(n -> System.out.printf("%d ", n));
+        System.out.println();
     }
 
     void ex6() {
-        characterStream(WAR_AND_PEACE).forEach(System.out::println);
+        Utils.printExercise(6);
+        characterStream(WAR_AND_PEACE).forEach(c -> System.out.printf("%c ", c));
+        System.out.println();
     }
 
     void ex7() {
-        System.out.println(isFiniteSimple(characterStream(WAR_AND_PEACE)));
-        System.out.println(isFiniteStable(initGenerator()));
+        Utils.printExercise(7);
+        System.out.println("Simple check: " + isFiniteSimple(characterStream(WAR_AND_PEACE)));
+        System.out.println("Check: " + isFiniteStable(initGenerator()));
     }
 
     void ex8() {
+        Utils.printExercise(8);
         Stream<Integer> first = intStreamWithLimit(10);
         Stream<Integer> second = intStreamWithLimit(11);
-        zip(first, second).forEach(System.out::println);
+        zip(first, second).forEach(n -> System.out.printf("%d ", n));
+        System.out.println();
     }
 
     void ex9() {
+        Utils.printExercise(9);
         List<Integer> array = intStreamWithLimit(5).collect(Collectors.toList());
         BinaryOperator<List<Integer>> accumulator = (list1, list2) -> {
             list1.addAll(list2);
@@ -157,16 +171,23 @@ class Chapter2 {
                 accumulator,
                 accumulator);
         collectionPrinter("Third reduce: ", third);
+        System.out.println();
     }
 
     private void ex10() {
-        Stream<Double> stream = Stream.iterate(1.0, v -> v + 1.0).limit(5);
-        System.out.println(stream.reduce(new DoubleAverager(),
+        Utils.printExercise(10);
+        int limit = 5;
+        double start = 1.0;
+        double step = start;
+        Stream<Double> stream = Stream.iterate(start, v -> v + step).limit(limit);
+        double average = stream.reduce(new DoubleAverager(),
                 DoubleAverager::accept,
-                DoubleAverager::combine).average());
+                DoubleAverager::combine).average();
+        System.out.printf("Average of double stream from %f to %d with step %f is %f %n", start, limit, step, average);
     }
 
     private void ex11() {
+        Utils.printExercise(11);
         List<List<Integer>> aggregator = new ArrayList<>();
         aggregator.add(intStreamWithLimit(3).collect(Collectors.toList()));
         aggregator.add(intStreamWithLimit(4).collect(Collectors.toList()));
@@ -175,10 +196,11 @@ class Chapter2 {
         Integer[] flatArray = aggregator.stream().flatMap(Collection::stream).toArray(Integer[]::new);
         List<Integer> result = Arrays.asList(new Integer[flatArray.length]);
         IntStream.range(0, flatArray.length).parallel().forEach(c -> result.set(c, flatArray[c]));
-        collectionPrinter("Exercise 11: ", result);
+        collectionPrinter("Flat array: ", result);
     }
 
     private void ex12() throws IOException {
+        Utils.printExercise(12);
         AtomicInteger[] shortWords = new AtomicInteger[SYMBOLS_FOR_WORD];
         Stream<String> stream = getWordsFromFile(WAR_AND_PEACE).stream();
         stream.parallel().forEach(w -> {
@@ -194,15 +216,16 @@ class Chapter2 {
         });
         for (int i = 0; i < SYMBOLS_FOR_WORD; i++) {
             AtomicInteger counter = shortWords[i];
-            System.out.printf("%d symbol words counter %d \n", i, counter.get());
+            System.out.printf("%d symbol words counter %d %n", i, counter.get());
         }
     }
 
     private void ex13() throws IOException {
+        Utils.printExercise(13);
         getWordsFromFile(WAR_AND_PEACE).parallelStream()
                 .filter(w -> w.length() < SYMBOLS_FOR_WORD)
                 .collect(Collectors.groupingBy(String::length, Collectors.counting()))
-                .forEach((s, c) -> System.out.printf("%d symbol words counter %d \n", s, c));
+                .forEach((s, c) -> System.out.printf("%d symbol words counter %d %n", s, c));
     }
 
     private void collectionPrinter(final String message, final Collection<Integer> collection) {
