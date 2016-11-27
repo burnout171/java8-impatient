@@ -1,3 +1,8 @@
+package chapter.three;
+
+import chapter.Utils;
+import javafx.application.Application;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
@@ -37,6 +42,11 @@ public class Chapter3 {
         }
     }
 
+    void ex5() {
+        Utils.printExercise(5);
+        Application.launch(BorderImage.class);
+    }
+
     void assertFunction(final BooleanSupplier supplier) {
         if (!supplier.getAsBoolean()) {
             throw new AssertionError("Wrong condition: " + supplier.getAsBoolean());
@@ -67,9 +77,10 @@ public class Chapter3 {
 
     public static void main(String[] args) {
         Chapter3 ch = new Chapter3();
-        ch.ex1();
-        ch.ex2();
-        ch.ex3();
+//        ch.ex1();
+//        ch.ex2();
+//        ch.ex3();
+        ch.ex5();
     }
 
 }
