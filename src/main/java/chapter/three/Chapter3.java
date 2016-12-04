@@ -60,7 +60,7 @@ public class Chapter3 {
     void ex7() {
         Utils.printExercise(7);
         List<String> strings = Arrays.asList(" First", "second", " third ", "FouRth");
-        Comparator<String> comparator = StringComparator.get(StringComparator.Options.all());
+        Comparator<String> comparator = StringComparator.getOptionsComparator(StringComparator.Options.all());
         strings.sort(comparator);
         strings.forEach(s -> System.out.printf("%s ", s));
 
@@ -69,6 +69,19 @@ public class Chapter3 {
     void ex8() {
         Utils.printExercise(8);
         Application.launch(BorderImage.class, "--size=10", "--color=white", "--image=queen-mary.png");
+    }
+
+    void ex9() {
+        Utils.printExercise(9);
+        List<Person> persons =
+                Arrays.asList(
+                        new Person("Ron", "Weasley"),
+                        new Person("Harry", "Potter"),
+                        new Person("Hermione", "Granger"),
+                        new Person("Ron", null),
+                        new Person(null, null));
+        persons.sort(StringComparator.getLexicographicComparator("firstname", "lastname"));
+        persons.forEach(s -> System.out.printf("%s ", s));
     }
 
     private void assertFunction(final BooleanSupplier supplier) {
@@ -107,7 +120,8 @@ public class Chapter3 {
 //        ch.ex5();
 //        ch.ex6();
 //        ch.ex7();
-        ch.ex8();
+//        ch.ex8();
+        ch.ex9();
     }
 
 }
