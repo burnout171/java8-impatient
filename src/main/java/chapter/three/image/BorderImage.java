@@ -26,6 +26,7 @@ public class BorderImage extends AbstractImageWithEffect {
 
     @Override
     protected void extractParameters() {
+        super.extractParameters();
         Map<String, String> parameters = getNamedParameters();
         if(!parameters.isEmpty()) {
             size = Integer.valueOf(parameters.get("size"));
@@ -53,9 +54,5 @@ public class BorderImage extends AbstractImageWithEffect {
             }
         }
         return out;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(args);
     }
 }

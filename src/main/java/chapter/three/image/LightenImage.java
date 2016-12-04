@@ -24,6 +24,7 @@ public class LightenImage extends AbstractImageWithEffect {
 
     @Override
     protected void extractParameters() {
+        super.extractParameters();
         Map<String, String> parameters = getNamedParameters();
         if(!parameters.isEmpty()) {
             coefficient = Integer.valueOf(parameters.get("coefficient"));

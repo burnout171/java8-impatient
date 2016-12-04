@@ -12,17 +12,21 @@ import java.util.Map;
 public abstract class AbstractImageWithEffect extends Application {
 
     private static final String DEFAULT_IMAGE_URL = "queen-mary.png";
-    protected final Image image;
+    protected Image image = new Image(DEFAULT_IMAGE_URL);
 
     protected AbstractImageWithEffect() {
-        image = new Image(DEFAULT_IMAGE_URL);
     }
 
     protected AbstractImageWithEffect(final Image image) {
         this.image = image;
     }
 
-    protected abstract void extractParameters();
+    protected void extractParameters() {
+        Map<String, String> parameters = getNamedParameters();
+        if (!parameters.isEmpty()) {
+            image = new Image(parameters.get("image"));
+        }
+    }
 
     protected Map<String, String> getNamedParameters() {
         Parameters parameters = getParameters();

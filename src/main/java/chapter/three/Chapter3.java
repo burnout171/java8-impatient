@@ -68,7 +68,7 @@ public class Chapter3 {
 
     void ex8() {
         Utils.printExercise(8);
-        Application.launch(BorderImage.class, "--size=10", "--`color=white");
+        Application.launch(BorderImage.class, "--size=10", "--color=white", "--image=queen-mary.png");
     }
 
     private void assertFunction(final BooleanSupplier supplier) {
