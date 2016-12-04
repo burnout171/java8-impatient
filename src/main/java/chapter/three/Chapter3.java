@@ -47,13 +47,18 @@ public class Chapter3 {
         Application.launch(BorderImage.class);
     }
 
-    void assertFunction(final BooleanSupplier supplier) {
+    void ex6() {
+        Utils.printExercise(6);
+        Application.launch(LightenImage.class);
+    }
+
+    private void assertFunction(final BooleanSupplier supplier) {
         if (!supplier.getAsBoolean()) {
             throw new AssertionError("Wrong condition: " + supplier.getAsBoolean());
         }
     }
 
-    void withLock(final Lock lock, final Runnable run) {
+    private void withLock(final Lock lock, final Runnable run) {
         lock.lock();
         try {
             new Thread(run).start();
@@ -80,7 +85,8 @@ public class Chapter3 {
 //        ch.ex1();
 //        ch.ex2();
 //        ch.ex3();
-        ch.ex5();
+//        ch.ex5();
+        ch.ex6();
     }
 
 }
