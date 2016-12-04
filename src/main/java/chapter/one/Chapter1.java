@@ -1,14 +1,13 @@
+package chapter.one;
+
 import chapter.Utils;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 class Chapter1 {
 
@@ -16,30 +15,6 @@ class Chapter1 {
 
     Chapter1() {
         Utils.printChapter(Chapter1.class.getSimpleName());
-    }
-
-    private interface RunnableEx {
-        void run() throws Exception;
-
-        static Runnable uncheck(final RunnableEx runner) {
-                return () -> {
-                    try {
-                        runner.run();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                };
-        }
-    }
-
-    private interface Collection2<T> extends Collection<T> {
-        default void forEachIf(Consumer<T> action, Predicate<T> filter) {
-            forEach(i -> {
-                if (filter.test(i)) {
-                    action.accept(i);
-                }
-            });
-        }
     }
 
     void ex1() {
