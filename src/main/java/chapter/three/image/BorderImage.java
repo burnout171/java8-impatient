@@ -1,45 +1,43 @@
-package chapter.three;
+package chapter.three.image;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
+import chapter.three.ColorTransformer;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public class BorderImage extends Application {
-    private final Image image;
-    private final int size;
+import java.util.Map;
+
+public class BorderImage extends AbstractImageWithEffect {
+    private int size = 10;
+    private Color color = Color.BLACK;
 
     public BorderImage() {
-        image = new Image("queen-mary.png");
-        size = 10;
-    }
-
-    public BorderImage(final Image image, final int size) {
-        this.image = image;
-        this.size = size;
+        super();
     }
 
     @Override
     public void start(final Stage stage) throws Exception {
+        extractParameters();
         ColorTransformer border = prepareTransformer();
         Image transformed = transform(image, border);
         show(stage, transformed);
     }
 
-    private void show(final Stage stage, final Image transformed) {
-        stage.setScene(new Scene(new HBox(new ImageView(image), new ImageView(transformed))));
-        stage.show();
+    @Override
+    protected void extractParameters() {
+        Map<String, String> parameters = getNamedParameters();
+        if(!parameters.isEmpty()) {
+            size = Integer.valueOf(parameters.get("size"));
+            color = Color.valueOf(parameters.get("color"));
+        }
     }
 
     private ColorTransformer prepareTransformer() {
         return (x, y, color) -> {
             if (x < size || x > image.getWidth() - size ||
                     y < size || y > image.getHeight() - size) {
-                return Color.BLACK;
+                return this.color;
             }
             return color;
         };
@@ -55,5 +53,9 @@ public class BorderImage extends Application {
             }
         }
         return out;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(args);
     }
 }

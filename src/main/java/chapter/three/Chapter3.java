@@ -1,8 +1,13 @@
 package chapter.three;
 
 import chapter.Utils;
+import chapter.three.image.BorderImage;
+import chapter.three.image.LightenImage;
 import javafx.application.Application;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BooleanSupplier;
@@ -52,6 +57,20 @@ public class Chapter3 {
         Application.launch(LightenImage.class);
     }
 
+    void ex7() {
+        Utils.printExercise(7);
+        List<String> strings = Arrays.asList(" First", "second", " third ", "FouRth");
+        Comparator<String> comparator = StringComparator.get(StringComparator.Options.all());
+        strings.sort(comparator);
+        strings.forEach(s -> System.out.printf("%s ", s));
+
+    }
+
+    void ex8() {
+        Utils.printExercise(8);
+        Application.launch(BorderImage.class, "--size=10", "--`color=white");
+    }
+
     private void assertFunction(final BooleanSupplier supplier) {
         if (!supplier.getAsBoolean()) {
             throw new AssertionError("Wrong condition: " + supplier.getAsBoolean());
@@ -86,7 +105,9 @@ public class Chapter3 {
 //        ch.ex2();
 //        ch.ex3();
 //        ch.ex5();
-        ch.ex6();
+//        ch.ex6();
+//        ch.ex7();
+        ch.ex8();
     }
 
 }

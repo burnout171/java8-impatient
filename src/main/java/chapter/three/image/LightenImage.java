@@ -1,29 +1,18 @@
-package chapter.three;
+package chapter.three.image;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 
-public class LightenImage extends Application {
-
-    private final Image image;
-    private final double coefficient;
+public class LightenImage extends AbstractImageWithEffect {
+    private double coefficient = 2.0;
 
     public LightenImage() {
-        image = new Image("queen-mary.png");
-        coefficient = 2.0;
-    }
-
-    public LightenImage(final Image image, double coefficient) {
-        this.image = image;
-        this.coefficient = coefficient;
+        super();
     }
 
     @Override
@@ -33,9 +22,12 @@ public class LightenImage extends Application {
         show(stage, transformed);
     }
 
-    private void show(final Stage stage, final Image transformed) {
-        stage.setScene(new Scene(new HBox(new ImageView(image), new ImageView(transformed))));
-        stage.show();
+    @Override
+    protected void extractParameters() {
+        Map<String, String> parameters = getNamedParameters();
+        if(!parameters.isEmpty()) {
+            coefficient = Integer.valueOf(parameters.get("coefficient"));
+        }
     }
 
     private <T> Image transform(final Image in, final BiFunction<Color, T, Color> f, T arg) {
