@@ -84,6 +84,16 @@ public class Chapter3 {
         persons.forEach(s -> System.out.printf("%s ", s));
     }
 
+    void ex10() {
+        Utils.printExercise(10);
+        /*
+            These lines below will not be executed because transform(Image, Color) takes Color as second argument,
+            but op.compose(Color::grayscale) returns Function.
+            UnaryOperator op = Color::brighter;
+            Image finalImage = transform(image, op.compose(Color::grayscale));
+         */
+    }
+
     private void assertFunction(final BooleanSupplier supplier) {
         if (!supplier.getAsBoolean()) {
             throw new AssertionError("Wrong condition: " + supplier.getAsBoolean());
@@ -122,6 +132,7 @@ public class Chapter3 {
 //        ch.ex7();
 //        ch.ex8();
         ch.ex9();
+//        ch.ex10();
     }
 
 }
