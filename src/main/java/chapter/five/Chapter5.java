@@ -1,18 +1,21 @@
-package chapter.four;
+package chapter.five;
 
 import chapter.Utils;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.function.Predicate;
 
-class Chapter4 {
+class Chapter5 {
 
-    Chapter4() {
-        Utils.printChapter(Chapter4.class.getSimpleName());
+    Chapter5() {
+        Utils.printChapter(Chapter5.class.getSimpleName());
     }
 
     void ex1() {
@@ -46,8 +49,29 @@ class Chapter4 {
 
     void ex4() {
         Utils.printExercise(4);
-
         cal(2017, Month.JANUARY);
+    }
+
+    void ex5() {
+        Utils.printExercise(5);
+        LocalDate birthday = LocalDate.of(1989, Month.OCTOBER, 31);
+
+        System.out.println(birthday.until(LocalDate.now(), ChronoUnit.DAYS));
+    }
+
+    void ex6() {
+        Utils.printExercise(6);
+        int year = 1900;
+        LocalDate start = LocalDate.of(year, Month.JANUARY, 1)
+                .with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+        LocalDate stop = LocalDate.of(year + 100, Month.JANUARY, 1);
+
+        while (start.isBefore(stop)) {
+            if (start.getDayOfMonth() == 13) {
+                printDate(start);
+            }
+            start = start.plusWeeks(1);
+        }
     }
 
     private void cal(final int year, final Month month) {
@@ -88,15 +112,18 @@ class Chapter4 {
     }
 
     private void printDate(final LocalDate date) {
-        System.out.println(date);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E dd MM yyyy");
+        System.out.println(date.format(formatter));
     }
 
     public static void main(String[] args) {
-        Chapter4 ch = new Chapter4();
+        Chapter5 ch = new Chapter5();
 //        ch.ex1();
 //        ch.ex2();
 //        ch.ex3();
-        ch.ex4();
+//        ch.ex4();
+//        ch.ex5();
+        ch.ex6();
     }
 
 }
