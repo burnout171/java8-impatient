@@ -9,7 +9,7 @@ class DoubleAverager {
         this.count = 0;
     }
 
-    DoubleAverager(double total, int count) {
+    DoubleAverager(final double total, final int count) {
         this.total = total;
         this.count = count;
     }

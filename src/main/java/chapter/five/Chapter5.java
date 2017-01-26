@@ -3,14 +3,19 @@ package chapter.five;
 import chapter.Utils;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 class Chapter5 {
 
@@ -74,6 +79,50 @@ class Chapter5 {
         }
     }
 
+    void ex7() {
+        Utils.printExercise(7);
+
+        TimeInterval first = new TimeInterval(LocalTime.of(10, 00), LocalTime.of(11, 00));
+        TimeInterval second = new TimeInterval(LocalTime.of(9, 00), LocalTime.of(12, 00));
+        TimeInterval third = new TimeInterval(LocalTime.of(9, 00), LocalTime.of(10, 30));
+        TimeInterval fourth = new TimeInterval(LocalTime.of(10, 30), LocalTime.of(11, 30));
+        TimeInterval fifth = new TimeInterval(LocalTime.of(12, 00), LocalTime.of(13, 00));
+
+
+        System.out.println(first.intersect(second));
+        System.out.println(first.intersect(third));
+        System.out.println(first.intersect(fourth));
+        System.out.println(first.intersect(fifth));
+    }
+
+    void ex8() {
+        Utils.printExercise(8);
+
+        getZoneOffsets()
+                .distinct()
+                .sorted()
+                .forEach(System.out::println);
+    }
+
+    void ex9() {
+        Utils.printExercise(9);
+
+        getZoneOffsets()
+                .filter(offset -> offset.getOffset().getTotalSeconds() % 3600 != 0)
+                .distinct()
+                .sorted()
+                .forEach(System.out::println);
+    }
+
+    private Stream<TimeZoneOffset> getZoneOffsets() {
+        Instant now = Instant.now();
+        return ZoneId.getAvailableZoneIds().stream()
+                .map(zone -> {
+                    ZoneOffset offset = now.atZone(ZoneId.of(zone)).getOffset();
+                    return new TimeZoneOffset(offset, zone);
+                });
+    }
+
     private void cal(final int year, final Month month) {
         LocalDate date = LocalDate.of(year, month, 1);
         int counter = 0;
@@ -123,7 +172,10 @@ class Chapter5 {
 //        ch.ex3();
 //        ch.ex4();
 //        ch.ex5();
-        ch.ex6();
+//        ch.ex6();
+//        ch.ex7();
+//        ch.ex8();
+        ch.ex9();
     }
 
 }

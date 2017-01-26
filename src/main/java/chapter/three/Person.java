@@ -1,6 +1,6 @@
 package chapter.three;
 
-public class Person {
+class Person {
     private String firstname;
     private String lastname;
 

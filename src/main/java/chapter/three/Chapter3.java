@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-public class Chapter3 {
+class Chapter3 {
 
     Chapter3() {
         Utils.printChapter(Chapter3.class.getSimpleName());
