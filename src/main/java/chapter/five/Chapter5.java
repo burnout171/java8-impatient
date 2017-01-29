@@ -3,6 +3,7 @@ package chapter.five;
 import chapter.Utils;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,6 +11,7 @@ import java.time.Month;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
@@ -114,6 +116,61 @@ class Chapter5 {
                 .forEach(System.out::println);
     }
 
+    void ex10() {
+        Utils.printExercise(10);
+
+        ZonedDateTime start =
+                ZonedDateTime.of(LocalDate.now(), LocalTime.of(15, 5), ZoneId.of("America/Los_Angeles"));
+        Duration duration = Duration.ofMinutes(10 * 60 + 50);
+        ZonedDateTime finish = getDestinationTime(start, duration, ZoneId.of("Europe/Berlin"));
+        System.out.println(finish);
+    }
+
+    void ex11() {
+        Utils.printExercise(11);
+
+        ZonedDateTime start =
+                ZonedDateTime.of(LocalDate.now(), LocalTime.of(14, 5), ZoneId.of("Europe/Berlin"));
+        Duration duration = getDuration(start, LocalTime.of(16, 40), ZoneId.of("America/Los_Angeles"));
+
+        System.out.println(duration.toHours());
+    }
+
+    void ex12() {
+        Utils.printExercise(12);
+
+        ZonedDateTime start = ZonedDateTime.of(LocalDate.now(), LocalTime.of(15, 30), ZoneId.of("Europe/Berlin"));
+        LocalTime time = LocalTime.now();
+        ZoneId zone = ZoneId.of("Europe/Moscow");
+
+        boolean meeting = meetingInHour(start, time, zone);
+        System.out.println(meeting);
+
+    }
+
+    private boolean meetingInHour(final ZonedDateTime start,
+                                      final LocalTime time,
+                                      final ZoneId zone) {
+        Duration duration = getDuration(start, time, zone);
+
+        long minutes = Math.abs(duration.toMinutes());
+        return 0 < minutes && minutes < 60;
+    }
+
+    private ZonedDateTime getDestinationTime(final ZonedDateTime start,
+                                             final Duration duration,
+                                             final ZoneId arrivalZone) {
+        return start.plus(duration).withZoneSameInstant(arrivalZone);
+    }
+
+    private Duration getDuration(final ZonedDateTime start,
+                                 final LocalTime time,
+                                 final ZoneId zone) {
+        LocalDate date = LocalDate.now();
+        ZonedDateTime finish = ZonedDateTime.of(date, time, zone);
+        return Duration.between(start, finish);
+    }
+
     private Stream<TimeZoneOffset> getZoneOffsets() {
         Instant now = Instant.now();
         return ZoneId.getAvailableZoneIds().stream()
@@ -167,15 +224,18 @@ class Chapter5 {
 
     public static void main(String[] args) {
         Chapter5 ch = new Chapter5();
-//        ch.ex1();
-//        ch.ex2();
-//        ch.ex3();
-//        ch.ex4();
-//        ch.ex5();
-//        ch.ex6();
-//        ch.ex7();
-//        ch.ex8();
+        ch.ex1();
+        ch.ex2();
+        ch.ex3();
+        ch.ex4();
+        ch.ex5();
+        ch.ex6();
+        ch.ex7();
+        ch.ex8();
         ch.ex9();
+        ch.ex10();
+        ch.ex11();
+        ch.ex12();
     }
 
 }
