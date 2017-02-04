@@ -1,24 +1,34 @@
 package chapter.six;
 
+import static chapter.Utils.ALICE;
+import static chapter.Utils.WAR_AND_PEACE;
 import static chapter.Utils.getWordsFromFile;
 
 import chapter.Utils;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 class Chapter6 {
-
-    private static final String WAR_AND_PEACE = "war_and_peace.txt";
 
     Chapter6() {
         Utils.printChapter(Chapter6.class.getSimpleName());
@@ -39,7 +49,7 @@ class Chapter6 {
                     longest.updateAndGet(update);
                 });
 
-        System.out.printf("Word %s with length %d\n", longest.get(), longest.get().length());
+        System.out.printf("Word \"%s\" with length %d\n", longest.get(), longest.get().length());
     }
 
     void ex3() {
@@ -53,6 +63,70 @@ class Chapter6 {
             longAdder.increment();
             return null;
         });
+    }
+
+    void ex4() throws IOException {
+        Utils.printExercise(4);
+
+        LongAccumulator max = new LongAccumulator(Math::max, 0);
+        LongAccumulator min = new LongAccumulator(Math::min, Long.MAX_VALUE);
+        getWordsFromFile(WAR_AND_PEACE).parallelStream()
+                .forEach(word -> {
+                    int size = word.length();
+                    max.accumulate(size);
+                    min.accumulate(size);
+                });
+
+        System.out.printf("Max accumulator value %d\n", max.longValue());
+        System.out.printf("Min accumulator value %d\n", min.longValue());
+
+    }
+
+    void ex5() {
+        Utils.printExercise(5);
+
+        ConcurrentMap<String, Set<File>> wordsToFiles = new ConcurrentHashMap<>();
+        BiFunction<Set<File>, Set<File>, Set<File>> merge = (oldValue, newValue) -> {
+            if (oldValue == null) {
+                return newValue;
+            }
+            else {
+                oldValue.addAll(newValue);
+                return oldValue;
+            }
+        };
+
+        wordsInFiles(wordsToFiles,
+                (key, value) -> wordsToFiles.merge(key, new HashSet<>(Collections.singletonList(value)), merge));
+    }
+
+    void ex6() {
+        Utils.printExercise(6);
+
+        ConcurrentMap<String, Set<File>> wordsToFiles = new ConcurrentHashMap<>();
+        wordsInFiles(wordsToFiles,
+                (key, value) -> wordsToFiles.computeIfAbsent(key, k -> new HashSet<>()).add(value));
+    }
+
+    private void wordsInFiles(final ConcurrentMap<String, Set<File>> map,
+                              final BiConsumer<String, File> consumer) {
+        List<String> books = Arrays.asList(ALICE, WAR_AND_PEACE);
+        books.parallelStream().forEach(book -> {
+            File file = new File(this.getClass().getClassLoader().getResource(book).toString());
+            try {
+                getWordsFromFile(book).forEach(word -> {
+                    consumer.accept(word, file);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        System.out.printf("Number of words = %d in files %s\n",
+                map.keySet().size(),
+                map.values().stream()
+                        .filter(s -> s.size() == books.size())
+                        .findFirst());
     }
 
     private <T extends Number> void counterRunner(final T counter, final Supplier<?> supplier) {
@@ -69,7 +143,7 @@ class Chapter6 {
         });
         CompletableFuture.allOf(features).whenComplete((v, ex) -> {
             if (ex != null) {
-                System.out.println(ex);
+                ex.printStackTrace();
                 return;
             }
             long stop = System.currentTimeMillis();
@@ -80,12 +154,15 @@ class Chapter6 {
 
     public static void main(String[] args) {
         Chapter6 ch = new Chapter6();
-//        try {
-//            ch.ex1();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            ch.ex1();
+            ch.ex4();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         ch.ex3();
+        ch.ex5();
+        ch.ex6();
     }
 
 }

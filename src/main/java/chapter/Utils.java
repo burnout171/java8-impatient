@@ -10,6 +10,9 @@ import java.util.List;
 
 public final class Utils {
 
+    public static final String ALICE = "alice.txt";
+    public static final String WAR_AND_PEACE = "war_and_peace.txt";
+
     public static void printChapter(final String chapter) {
         System.out.printf("** %s started **\n", chapter);
     }

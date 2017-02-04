@@ -1,5 +1,7 @@
 package chapter.two;
 
+import static chapter.Utils.ALICE;
+import static chapter.Utils.WAR_AND_PEACE;
 import static chapter.Utils.getWordsFromFile;
 
 import chapter.Utils;
@@ -19,8 +21,6 @@ import java.util.stream.Stream;
 class Chapter2 {
 
     private static final int SYMBOLS_FOR_WORD = 12;
-    private static final String ALICE = "alice.txt";
-    private static final String WAR_AND_PEACE = "war_and_peace.txt";
 
     Chapter2() {
         Utils.printChapter(Chapter2.class.getSimpleName());
