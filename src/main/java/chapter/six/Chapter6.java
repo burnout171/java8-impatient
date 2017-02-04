@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,6 +109,29 @@ class Chapter6 {
                 (key, value) -> wordsToFiles.computeIfAbsent(key, k -> new HashSet<>()).add(value));
     }
 
+    void ex7() throws IOException {
+        Utils.printExercise(7);
+
+        ConcurrentHashMap<String, Long> words = new ConcurrentHashMap<>();
+        getWordsFromFile(WAR_AND_PEACE).forEach(word ->
+                words.putIfAbsent(word, Integer.toUnsignedLong(word.length())));
+        Map.Entry<String, Long> entry =
+                words.reduceEntries(8, (e1, e2) -> e1.getValue() > e2.getValue() ? e1 : e2);
+
+        System.out.printf("Word \"%s\" with length %d\n", entry.getKey(), entry.getValue());
+    }
+
+    void ex9() {
+        Utils.printExercise(9);
+
+        Matrix[] fibonacci = new Matrix[10];
+        int[][] start = {{1, 1},{1, 0}};
+        Arrays.parallelSetAll(fibonacci, i -> new Matrix(start));
+        Arrays.parallelPrefix(fibonacci, Matrix::multiply);
+
+        Arrays.asList(fibonacci).forEach(System.out::println);
+    }
+
     private void wordsInFiles(final ConcurrentMap<String, Set<File>> map,
                               final BiConsumer<String, File> consumer) {
         List<String> books = Arrays.asList(ALICE, WAR_AND_PEACE);
@@ -154,15 +178,17 @@ class Chapter6 {
 
     public static void main(String[] args) {
         Chapter6 ch = new Chapter6();
-        try {
-            ch.ex1();
-            ch.ex4();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ch.ex3();
-        ch.ex5();
-        ch.ex6();
+//        try {
+//            ch.ex1();
+//            ch.ex4();
+//            ch.ex7();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        ch.ex3();
+//        ch.ex5();
+//        ch.ex6();
+        ch.ex9();
     }
 
 }
