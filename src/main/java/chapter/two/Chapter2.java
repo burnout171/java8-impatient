@@ -1,12 +1,10 @@
 package chapter.two;
 
+import static chapter.Utils.getWordsFromFile;
+
 import chapter.Utils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -241,13 +239,6 @@ class Chapter2 {
         return words.stream()
                 .filter(w -> w.length() > SYMBOLS_FOR_WORD)
                 .count();
-    }
-
-    private List<String> getWordsFromFile(final String name) throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        Path file = Paths.get(classLoader.getResource(name).getFile());
-        String contents = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
-        return Arrays.asList(contents.split("[\\P{L}]+"));
     }
 
     private Stream<Character> characterStream(final String s) {
