@@ -8,6 +8,7 @@ import chapter.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.PasswordAuthentication;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,12 +20,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
@@ -132,6 +137,58 @@ class Chapter6 {
         Arrays.asList(fibonacci).forEach(System.out::println);
     }
 
+    void ex10() {
+        Utils.printExercise(10);
+
+        final String url = "https://yandex.ru/";
+        LinkExtracter extracter = new LinkExtracter();
+        CompletableFuture.supplyAsync(() -> extracter.getLinksFromPage(url))
+                .whenComplete((links, error) -> {
+                    if (error != null) {
+                        error.printStackTrace();
+                    }
+                    links.forEach(System.out::println);
+                });
+        ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
+    }
+
+    void ex11() {
+        Utils.printExercise(11);
+
+        String user = System.getProperty("user.name");
+        char[] pass = {'s', 'e', 'c', 'r', 'e', 't'};
+        AtomicInteger counter = new AtomicInteger(0);
+        StringBuilder builder = new StringBuilder();
+
+        Supplier<PasswordAuthentication> passwordGenerator = () -> {
+            int index = counter.getAndIncrement();
+            builder.append(pass[index]);
+            return new PasswordAuthentication(user, builder.toString().toCharArray());
+        };
+
+        Predicate<PasswordAuthentication> predicate = (credentials) -> {
+            final String password = "secret";
+            return password.equals(new String(credentials.getPassword()));
+        };
+
+        repeat(passwordGenerator, predicate)
+                .thenAccept((authentication) ->
+                        System.out.printf("User %s, password %s\n",
+                                authentication.getUserName(), new String(authentication.getPassword())));
+        ForkJoinPool.commonPool().awaitQuiescence(10, TimeUnit.SECONDS);
+    }
+
+    public static <T> CompletableFuture<T> repeat(final Supplier<T> action,
+                                                  final Predicate<T> until) {
+        return CompletableFuture.supplyAsync(action)
+                .thenApplyAsync(value -> {
+                    if (!until.test(value)) {
+                        return repeat(action, until).join();
+                    }
+                    return value;
+                });
+    }
+
     private void wordsInFiles(final ConcurrentMap<String, Set<File>> map,
                               final BiConsumer<String, File> consumer) {
         List<String> books = Arrays.asList(ALICE, WAR_AND_PEACE);
@@ -178,17 +235,19 @@ class Chapter6 {
 
     public static void main(String[] args) {
         Chapter6 ch = new Chapter6();
-//        try {
-//            ch.ex1();
-//            ch.ex4();
-//            ch.ex7();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ch.ex3();
-//        ch.ex5();
-//        ch.ex6();
+        try {
+            ch.ex1();
+            ch.ex4();
+            ch.ex7();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ch.ex3();
+        ch.ex5();
+        ch.ex6();
         ch.ex9();
+        ch.ex10();
+        ch.ex11();
     }
 
 }
