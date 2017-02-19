@@ -1,8 +1,22 @@
 package chapter.eight;
 
-import chapter.Utils;
+import static chapter.Utils.ALICE;
+import static chapter.Utils.WAR_AND_PEACE;
 
+import chapter.Utils;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
+
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 class Chapter8 {
@@ -60,6 +74,71 @@ class Chapter8 {
         System.out.printf("Index %d, value %f\n", index, value);
     }
 
+    void ex5() throws IOException {
+        Utils.printExercise(5);
+
+        List<String> words = Utils.getWordsFromFile(WAR_AND_PEACE);
+        Set<String> longWords = new HashSet<>();
+        words.forEach(w -> {
+            if (w.length() > 12) {
+                longWords.add(w);
+            }
+        });
+        longWords.forEach(w -> System.out.printf("Word '%s', length = %d\n", w, w.length()));
+    }
+
+    void ex6() {
+        Utils.printExercise(6);
+
+        GeometryComparators comparator = new GeometryComparators();
+        Point2D point = new Point2D(1.0, 2.0);
+        comparator.compare(point, point);
+        comparator.compare(point, new Point2D(2.0, 3.0));
+
+        Rectangle2D rectangle = new Rectangle2D(1.0, 2.0, 3, 4);
+        comparator.compare(rectangle, rectangle);
+        comparator.compare(rectangle, new Rectangle2D(2.0, 3.0, 4, 5));
+    }
+
+    void ex7() {
+        Utils.printExercise(7);
+
+        String[] strings = {"b", "c", null, "a"};
+        Arrays.sort(strings, Comparator.nullsLast(Comparator.reverseOrder()));
+        Arrays.stream(strings).forEach(System.out::println);
+    }
+
+    void ex8() {
+        Utils.printExercise(8);
+
+        Queue queue = Collections.checkedQueue(new ArrayDeque<>(), Point2D.class);
+        try {
+            queue.add(Point2D.ZERO);
+            queue.add("test");
+        } catch (ClassCastException ex) {
+            System.out.printf("Catch exception during put in the queue '%s'\n", ex);
+        }
+    }
+
+    void ex9() throws IOException {
+        Utils.printExercise(9);
+
+        int limit = 10;
+        ScannerStream streamGenerator = new ScannerStream(ALICE);
+
+        streamGenerator.words().limit(limit).forEach(w -> System.out.printf("%s, ", w));
+        System.out.println();
+
+        streamGenerator.lines().limit(limit).forEach(l -> System.out.printf("%s, ", l));
+        System.out.println();
+
+        streamGenerator.integers().limit(limit).forEach(i -> System.out.printf("%d, ", i));
+        System.out.println();
+
+        streamGenerator.doubles().limit(limit).forEach(d -> System.out.printf("%f, ", d));
+        System.out.println();
+    }
+
     private Long unsignedOperation(final Integer first,
                                    final Integer second,
                                    final BiFunction<Integer, Integer, Integer> operation) {
@@ -72,6 +151,15 @@ class Chapter8 {
 //        ch.ex1();
 //        ch.ex2();
 //        ch.ex3();
-        ch.ex4();
+//        ch.ex4();
+        try {
+//            ch.ex5();
+            ch.ex9();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        ch.ex6();
+//        ch.ex7();
+//        ch.ex8();
     }
 }
