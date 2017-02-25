@@ -1,10 +1,10 @@
 package chapter.six;
 
-public class Matrix {
+class Matrix {
 
     private final int[][] array;
 
-    public Matrix(final int[][] array) {
+    Matrix(final int[][] array) {
         this.array = array;
     }
 

@@ -1,10 +1,8 @@
 package chapter.six;
 
-import java.io.BufferedReader;
+import static chapter.six.WebPageReader.readPage;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -21,7 +19,7 @@ class LinkExtracter {
     List<String> getLinksFromPage(final String url) {
         String page;
         try {
-            page = readPage(url);
+            page = readPage(url, null);
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -34,21 +32,5 @@ class LinkExtracter {
         }
 
         return links;
-    }
-
-    private String readPage(final String url) throws IOException {
-        URL page = new URL(url);
-        URLConnection connection = page.openConnection();
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(connection.getInputStream()));
-
-        StringBuilder builder = new StringBuilder();
-        String inputLine;
-        while ((inputLine = reader.readLine()) != null) {
-            builder.append(inputLine);
-        }
-        reader.close();
-
-        return builder.toString();
     }
 }

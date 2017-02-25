@@ -4,10 +4,13 @@ import static chapter.Utils.ALICE;
 import static chapter.Utils.WAR_AND_PEACE;
 
 import chapter.Utils;
+import chapter.six.WebPageReader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +26,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-class Chapter8 {
+public class Chapter8 {
 
     Chapter8() {
         Utils.printChapter(Chapter8.class.getSimpleName());
@@ -173,6 +176,43 @@ class Chapter8 {
         }
     }
 
+    void ex11() throws IOException {
+        Utils.printExercise(11);
+
+        String url = "http://192.168.1.1/";
+        String authentication = "test:test";
+        String page = WebPageReader.readPage(url, authentication);
+        System.out.println(page);
+    }
+
+    void ex12() {
+        Utils.printExercise(12);
+
+        Method[] methods = Chapter8.class.getMethods();
+        Arrays.stream(methods).forEach(method -> {
+            TestCase testCase = method.getAnnotation(TestCase.class);
+            if (testCase == null) {
+                return;
+            }
+            try {
+                Integer actual = (Integer) method.invoke(this, testCase.argument());
+                int result = Integer.compare(testCase.expected(), actual);
+
+                System.out.printf("'%s()' returns %d. Expected %d.\n", method.getName(), actual, testCase.expected());
+                if (result != 0) {
+                    throw new AssertionError();
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    @TestCase(argument = 2, expected = 4)
+    public int square(final int argument) {
+        return argument * argument;
+    }
+
     private Long unsignedOperation(final Integer first,
                                    final Integer second,
                                    final BiFunction<Integer, Integer, Integer> operation) {
@@ -189,12 +229,14 @@ class Chapter8 {
 //        try {
 //            ch.ex5();
 //            ch.ex9();
+//            ch.ex11();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
 //        ch.ex6();
 //        ch.ex7();
 //        ch.ex8();
-        ch.ex10();
+//        ch.ex10();
+        ch.ex12();
     }
 }
