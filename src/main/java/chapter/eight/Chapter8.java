@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class Chapter8 {
 
-    Chapter8() {
+    public Chapter8() {
         Utils.printChapter(Chapter8.class.getSimpleName());
     }
 
@@ -208,6 +208,15 @@ public class Chapter8 {
         });
     }
 
+    void ex13() {
+        Utils.printExercise(13);
+        //How to check:
+        //1. Build project using "mvn clean install" command
+        //2. Compile Chapter8 with annotation processor using
+        //   "javac -cp target/java8-impatient-1.0-SNAPSHOT.jar src/main/java/chapter/eight/Chapter8.java"
+        //3. Run built class "java -cp '.:target/java8-impatient-1.0-SNAPSHOT.jar' AnnotationProcessorTest "
+    }
+
     @TestCase(argument = 2, expected = 4)
     public int square(final int argument) {
         return argument * argument;
@@ -237,6 +246,7 @@ public class Chapter8 {
 //        ch.ex7();
 //        ch.ex8();
 //        ch.ex10();
-        ch.ex12();
+//        ch.ex12();
+        ch.ex13();
     }
 }

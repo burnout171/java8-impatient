@@ -17,8 +17,7 @@ public class TestCaseProcessor extends AbstractProcessor {
     @Override
     public boolean process(final Set<? extends TypeElement> annotations,
                            final RoundEnvironment roundEnv) {
-        System.out.println("Start to process with: ");
-        System.out.println(roundEnv);
+        System.out.println("Start to process.");
 
         StringBuilder builder = new StringBuilder();
         annotations.forEach(annotation ->
@@ -27,9 +26,10 @@ public class TestCaseProcessor extends AbstractProcessor {
                 if (testCase == null) {
                     return;
                 }
+                String fullName = ((TypeElement) element.getEnclosingElement()).getQualifiedName().toString();
                 String testLine =
-                        String.format("\t\tnew %s().%s(%d)==%d ? System.out.println(\"Passed\") : System.out.println(\"Failed\");\n",
-                                element.getEnclosingElement().getSimpleName(), element.getSimpleName(), testCase.argument(), testCase.expected());
+                        String.format("\t\tif(new %s().%s(%d)==%d) System.out.println(\"Passed\"); else System.out.println(\"Failed\");\n",
+                                fullName, element.getSimpleName(), testCase.argument(), testCase.expected());
                 builder.append(testLine);
             })
         );
@@ -38,11 +38,11 @@ public class TestCaseProcessor extends AbstractProcessor {
     }
 
     private boolean prepareAndRun(final String body) {
+        String className = "AnnotationProcessorTest";
         try {
-            JavaFileObject javaFile = processingEnv.getFiler().createSourceFile("Test");
+            JavaFileObject javaFile = processingEnv.getFiler().createSourceFile(className);
             try (PrintWriter writer = new PrintWriter(javaFile.openWriter())) {
-                writer.println("import static chapter.eight.*;");
-                writer.println("public class Chapter8Test {");
+                writer.println(String.format("public class %s {", className));
                 writer.println("\tpublic static void main(String[] args) {");
                 writer.println(body);
                 writer.println("\t}");
