@@ -8,6 +8,9 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +21,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 class Chapter8 {
 
@@ -139,6 +143,36 @@ class Chapter8 {
         System.out.println();
     }
 
+    void ex10() {
+        Utils.printExercise(10);
+
+        String zipFile = System.getenv().get("JAVA_HOME") + "/src.zip";
+        String outputDirectory = "/tmp/ex10";
+        try (ZipExtractor extractor = new ZipExtractor(zipFile, outputDirectory)) {
+            extractor.extract();
+            List<Path> files = Files.walk(Paths.get(outputDirectory))
+                    .filter(file -> {
+                        if (Files.isDirectory(file)) {
+                            return false;
+                        }
+
+                        try {
+                            return Files.lines(file)
+                                    .anyMatch(line -> line.contains("transient") || line.contains("volatile"));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+            System.out.printf("Found %d classes:\n", files.size());
+            files.forEach(System.out::println);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Long unsignedOperation(final Integer first,
                                    final Integer second,
                                    final BiFunction<Integer, Integer, Integer> operation) {
@@ -152,14 +186,15 @@ class Chapter8 {
 //        ch.ex2();
 //        ch.ex3();
 //        ch.ex4();
-        try {
+//        try {
 //            ch.ex5();
-            ch.ex9();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//            ch.ex9();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 //        ch.ex6();
 //        ch.ex7();
 //        ch.ex8();
+        ch.ex10();
     }
 }
