@@ -20,10 +20,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Chapter8 {
@@ -217,9 +221,53 @@ public class Chapter8 {
         //3. Run built class "java -cp '.:target/java8-impatient-1.0-SNAPSHOT.jar' AnnotationProcessorTest "
     }
 
+    void ex14() {
+        Utils.printExercise(14);
+
+        try {
+            Objects.requireNonNull(null, () -> "Require non null test. Argument can`t be null.");
+        } catch (NullPointerException ex) { //Bad practice. Just for exercise.
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    void ex15() throws IOException {
+        Utils.printExercise(15);
+
+        Path file = Utils.getPathToBook(WAR_AND_PEACE);
+        grep(file, Pattern.compile("[bB]oy")).forEach(System.out::println);
+    }
+
+    void ex16() {
+        Utils.printExercise(16);
+
+        address("Moscow, MO 100500").ifPresent(System.out::println);
+        address("Test test test").ifPresent(System.out::println);
+    }
+
     @TestCase(argument = 2, expected = 4)
     public int square(final int argument) {
         return argument * argument;
+    }
+
+    private Optional<Address> address(final String line) {
+        Pattern pattern = Pattern.compile("(?<city>[\\p{L} ]+),\\s*(?<state>[A-Z]{2})\\s*(?<zip>[\\d]{5}|[\\d]{9})");
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            Address address = new Address(
+                    matcher.group("city"),
+                    matcher.group("state"),
+                    matcher.group("zip"));
+            return Optional.of(address);
+        }
+
+        return Optional.empty();
+    }
+
+    private List<String> grep(final Path file, final Pattern pattern) throws IOException {
+        return Files.lines(file)
+                .filter(pattern.asPredicate())
+                .collect(Collectors.toList());
     }
 
     private Long unsignedOperation(final Integer first,
@@ -231,22 +279,25 @@ public class Chapter8 {
 
     public static void main(String[] args) {
         Chapter8 ch = new Chapter8();
-//        ch.ex1();
-//        ch.ex2();
-//        ch.ex3();
-//        ch.ex4();
-//        try {
-//            ch.ex5();
-//            ch.ex9();
-//            ch.ex11();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ch.ex6();
-//        ch.ex7();
-//        ch.ex8();
-//        ch.ex10();
-//        ch.ex12();
+        ch.ex1();
+        ch.ex2();
+        ch.ex3();
+        ch.ex4();
+        try {
+            ch.ex5();
+            ch.ex9();
+            ch.ex11();
+            ch.ex15();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ch.ex6();
+        ch.ex7();
+        ch.ex8();
+        ch.ex10();
+        ch.ex12();
         ch.ex13();
+        ch.ex14();
+        ch.ex16();
     }
 }

@@ -21,9 +21,13 @@ public final class Utils {
         System.out.printf("-> Exercise%d.\n", number);
     }
 
-    public static List<String> getWordsFromFile(final String name) throws IOException {
+    public static Path getPathToBook(final String name) {
         ClassLoader classLoader = Utils.class.getClassLoader();
-        Path file = Paths.get(classLoader.getResource(name).getFile());
+        return Paths.get(classLoader.getResource(name).getFile());
+    }
+
+    public static List<String> getWordsFromFile(final String name) throws IOException {
+        Path file = getPathToBook(name);
         String contents = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
         return Arrays.asList(contents.split("[\\P{L}]+"));
     }
