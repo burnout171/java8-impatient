@@ -203,7 +203,7 @@ class Chapter9 {
                         "-ohr",
                         "-E",
                         reg,
-                        System.getProperty("user.home") + "/test")
+                        System.getProperty("user.home"))
                         .redirectOutput(to.toFile());
         processBuilder.start().waitFor(5, TimeUnit.MINUTES);
 
